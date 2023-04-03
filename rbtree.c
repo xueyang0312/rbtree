@@ -78,9 +78,17 @@ static int __init rbtree_init(void)
 
 static void __exit rbtree_exit(void)
 {
+    struct rbtree *data;
+    struct rb_node *node;
 
+    for (node = rb_first(&mytree); node; node = rb_next(node)) {
+        data = rb_entry(node, struct rbtree, node);
+        if (data) {
+            rb_erase(&data->node, &mytree);
+            kfree(data);
+        }
+    }
 }
-
 
 module_init(rbtree_init);
 module_exit(rbtree_exit);
