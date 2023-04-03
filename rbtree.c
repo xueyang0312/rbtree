@@ -1,5 +1,7 @@
 #include <linux/init.h>
 #include <linux/module.h>
+/* for kmalloc */
+#include <linux/slab.h>
 #include <linux/rbtree.h>
 
 MODULE_LICENSE("Dual MIT/GPL");
@@ -57,7 +59,21 @@ static int insert(struct rb_root *root, struct rbtree *data)
 
 static int __init rbtree_init(void)
 {
+    struct rbtree *data;
+    struct rb_node *node;
 
+    for (int i = 0; i < 20 ; i += 2) {
+        data = kmalloc(sizeof(struct rbtree), GFP_KERNEL);
+        data->key = i;
+        insert(&mytree, data);
+    }
+
+    /* traverse all rb tree and print it on console. */
+    for (node = rb_first(&mytree); node; node = rb_next(node)) {
+        printk("key=%d\r\n", rb_entry(node, struct rbtree, node)->key);
+    }
+
+    return 0;
 }
 
 static void __exit rbtree_exit(void)
