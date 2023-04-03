@@ -15,6 +15,25 @@ struct rbtree {
 /* Declare a root of rb tree */
 struct rb_root mytree = RB_ROOT;
 
+/* search key of rb tree*/
+static struct rbtree *search(struct rb_root *root, int new) 
+{
+    struct rb_node *node = root->rb_node;
+
+    while (node) {
+        struct rbtree *data = container_of(node, struct rbtree, node);
+        if (data->key > new)
+            node = node->rb_left;
+        else if (data->key < new)
+            node = node->rb_right;
+        else
+            return data;
+    }
+
+    return NULL;
+}
+
+/* insert data to rb tree */
 static int insert(struct rb_root *root, struct rbtree *data)
 {
     struct rb_node **new = &(root->rb_node) , *parent = NULL;
@@ -32,6 +51,8 @@ static int insert(struct rb_root *root, struct rbtree *data)
 
     rb_link_node(&data->node, parent, new);
     rb_insert_color(&data->node, root);
+
+    return 0;
 }
 
 static int __init rbtree_init(void)
